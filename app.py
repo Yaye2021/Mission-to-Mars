@@ -5,7 +5,7 @@ from flask import Flask, render_template, redirect, url_for
 from flask_pymongo import PyMongo
 
 #Scraping code, to convert the jupyter notebook to python
-import scraping
+#import scraping
 
 app = Flask(__name__)
 
@@ -22,7 +22,7 @@ mongo = PyMongo(app)
 #mars=mars, tells python to use the "mars" collection in MongoDB
 def index():
     mars = mongo.db.mars.find_one()
-       return render_template("index.html", mars=mars)
+    return render_template("index.html", mars=mars)
 
 #Defines the route flask will be using
 @app.route("/scrape")
