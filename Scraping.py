@@ -11,29 +11,6 @@ import datetime as dt
 #2. Create a data dictionary
 #3. End the webdriver and return the scraped data
 
-def scrape_all():
-    #Set up Splinter
-    # Initiate headless driver for deployment
-    executable_path = {'executable_path': ChromeDriverManager().install()}
-    browser = Browser('chrome', **executable_path, headless=True)
-    
-    #setting news title and news paragraph variables
-    news_title, news_paragraph = mars_news(browser)
-    
-    #create the data dictionary
-    
-    # Run all scraping functions and store results in dictionary
-    data = {
-      "news_title": news_title,
-      "news_paragraph": news_paragraph,
-      "featured_image": featured_image(browser),
-      "facts": mars_facts(),
-      "last_modified": dt.datetime.now()
-    }
-
-    # Stop webdriver and return data
-    browser.quit()
-    return data
     
 #the word "browser" of the function, tells python that we will be using the browser variable defined outside the function
 def mars_news(browser):
@@ -119,6 +96,57 @@ def mars_facts():
     
 # Convert dataframe into HTML format, add bootstrap
     return df.to_html(classes="table table-striped")
+
+
+# hemisphere function
+def hemisphere(browser):
+    url = 'https://marshemispheres.com/'
+    browser.visit(url)
+
+    html = browser.html
+    img_soup = soup(html, 'html.parser')
+
+    hemisphere_image_urls = []
+    # 3. Write code to retrieve the image urls and titles for each hemisphere.
+    hemisphere= img_soup.find_all('div', class_="item")
+    hemisphere
+    
+    for image in hemisphere:
+        title = image.find('h3').text
+        url = image.find('img', class_='thumb').get('src')
+        complete_url = f'https://astrogeology.usgs.gov/cache/{url}'
+        print(title)
+        print(complete_url)
+        
+        info= dict({'img_url':complete_url,'title': title})
+        hemisphere_image_urls.append(info)
+
+    return hemisphere_image_urls
+
+def scrape_all():
+    #Set up Splinter
+    # Initiate headless driver for deployment
+    executable_path = {'executable_path': ChromeDriverManager().install()}
+    browser = Browser('chrome', **executable_path, headless=True)
+    
+    #setting news title and news paragraph variables
+    news_title, news_paragraph = mars_news(browser)
+    
+    #create the data dictionary
+    # Run all scraping functions and store results in dictionary
+    data = {
+        "news_title": news_title,
+        "news_paragraph": news_paragraph,
+        "featured_image": featured_image(browser),
+        "facts": mars_facts(),
+        "hemisphere_images": hemisphere (browser),
+        "last_modified": dt.datetime.now(),
+        
+        }
+    
+    # Stop webdriver and return data
+    browser.quit()
+    return data 
 
 
 if __name__ == "__main__":
